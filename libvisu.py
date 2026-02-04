@@ -312,9 +312,6 @@ class Hive():
         '''
         htr_pos = {}
         for i in range(4):
-            if self.imgs[i] is None:
-                htr_pos[i] = None
-                continue
             htr_pos[i] = {}
             for j in range(10):
                 if i < 2:
@@ -707,7 +704,7 @@ class Hive():
         
         return rgb_imgs, min_temp
     
-    def _htr_snapshot(self,rgb_bg:list):
+    def _htr_snapshot(self,rgb_bg:list, show_obj:bool=True):
         # Draw a rectangle around the heaters and add information about the heaters
         for i, _ in enumerate(rgb_bg):
             htrs = self.htr_upper if (i == 0 or i == 2) else self.htr_lower
@@ -731,7 +728,7 @@ class Hive():
                     # Put the heater number on top left of the rectangle
                     cv2.putText(rgb_bg[i], htr, (self.htr_pos[i][htr][0][0]+mrg,self.htr_pos[i][htr][0][1]+10*mrg), cv2.FONT_HERSHEY_SIMPLEX, 3, (0,0,0), 5, cv2.LINE_AA)
 
-    def snapshot(self, thermal_transparency:float=0.25, v_min:float=10, v_max:float=35, contours:list=[], annotate_contours:bool=False, annotate_names:bool=True, show_frame_border:bool=False, check_validity:bool=True, use_cet_time:bool=False):
+    def snapshot(self, thermal_transparency:float=0.25, v_min:float=10, v_max:float=35, contours:list=[], annotate_contours:bool=False, annotate_names:bool=True, show_frame_border:bool=False, show_htr_obj:bool=True, check_validity:bool=True, use_cet_time:bool=False):
         '''
         Generates a global image with the 4 images of the hives with the timestamp on the pictures. It then adds the ThermalFrames ontop of the images.
         '''
@@ -753,7 +750,7 @@ class Hive():
             rgb_bg, min_temp = self._tmp_snapshot(rgb_bg,v_min,v_max,thermal_transparency,contours, annotate_contours=annotate_contours) # Adds thermal field and isotherms to the images
 
         if self.htr_upper is not None and self.htr_lower is not None:
-            self._htr_snapshot(rgb_bg) # Adds heaters data on the images
+            self._htr_snapshot(rgb_bg, show_obj=show_htr_obj) # Adds heaters data on the images
 
         if self.metabolic is not None:
             self._co2_snapshot(rgb_bg) # Add the CO2 measurements on the images
