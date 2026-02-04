@@ -214,7 +214,10 @@ thermal_shifts = {
     },
     'aSensing4' : {
         1:[(240,520),(280,460),(240,440),(180,440)]
-    }
+    },
+    'aSensing3.5' : {
+        1:[(280,520),(420,430),(230,440),(180,440)]
+    } 
 }
 
 class Hive():
@@ -309,9 +312,6 @@ class Hive():
         '''
         htr_pos = {}
         for i in range(4):
-            if self.imgs[i] is None:
-                htr_pos[i] = None
-                continue
             htr_pos[i] = {}
             for j in range(10):
                 if i < 2:
@@ -704,7 +704,7 @@ class Hive():
         
         return rgb_imgs, min_temp
     
-    def _htr_snapshot(self,rgb_bg:list):
+    def _htr_snapshot(self,rgb_bg:list, show_obj:bool=True):
         # Draw a rectangle around the heaters and add information about the heaters
         htr_colors = {
             'h00': (255, 165, 0),
@@ -734,7 +734,7 @@ class Hive():
                 else:
                     putTextRightJustify(rgb_bg[i], htr, (self.htr_pos[i][htr][1][0]-mrg,self.htr_pos[i][htr][1][1]-5*mrg), cv2.FONT_HERSHEY_SIMPLEX, 3.2, color, 12, cv2.LINE_AA, vertical_align="center")
 
-    def snapshot(self, thermal_transparency:float=0.25, v_min:float=10, v_max:float=35, contours:list=[], annotate_contours:bool=False, annotate_names:bool=True, show_frame_border:bool=False):
+    def snapshot(self, thermal_transparency:float=0.25, v_min:float=10, v_max:float=35, contours:list=[], annotate_contours:bool=False, annotate_names:bool=True, show_frame_border:bool=False, show_htr_obj:bool=True, check_validity:bool=True, use_cet_time:bool=False):
         '''
         Generates a global image with the 4 images of the hives with the timestamp on the pictures. It then adds the ThermalFrames ontop of the images.
         '''
@@ -756,7 +756,7 @@ class Hive():
             rgb_bg, min_temp = self._tmp_snapshot(rgb_bg,v_min,v_max,thermal_transparency,contours, annotate_contours=annotate_contours) # Adds thermal field and isotherms to the images
 
         if self.htr_upper is not None and self.htr_lower is not None:
-            self._htr_snapshot(rgb_bg) # Adds heaters data on the images
+            self._htr_snapshot(rgb_bg, show_obj=show_htr_obj) # Adds heaters data on the images
 
         if self.metabolic is not None:
             self._co2_snapshot(rgb_bg) # Add the CO2 measurements on the images
@@ -769,9 +769,9 @@ class Hive():
                 cv2.rectangle(img, rectangles[i][0], rectangles[i][1], (255, 0, 0), 10)
 
         if annotate_names:
-            assembled_img = imageHiveOverview(rgb_bg, rgb=True, img_names=self.imgs_names, dt=self.ts, valid=self.valid)
+            assembled_img = imageHiveOverview(rgb_bg, rgb=True, img_names=self.imgs_names, dt=self.ts, use_cet_time=use_cet_time, valid=(self.valid or not check_validity))
         else:
-            assembled_img = imageHiveOverview(rgb_bg, rgb=True, dt=self.ts, valid=self.valid)
+            assembled_img = imageHiveOverview(rgb_bg, rgb=True, dt=self.ts, use_cet_time=use_cet_time, valid=(self.valid or not check_validity))
 
         # add ambient temperature on the image (min temp)
         ambient_t_text = f"Ambient: {min_temp:.1f} C"
