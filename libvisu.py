@@ -600,7 +600,9 @@ class Hive():
             labels = [None, None]
             for i, cs in enumerate(_contours):
                 if cs is not None:
-                    labels[i] = ax.clabel(cs, inline=True, fontsize=8, fmt=lambda x: rf"{x:.0f} $^\circ$C")
+                    labels[i] = ax.clabel(cs, inline=True, fontsize=8,
+                      fmt=lambda x: f"{x:.0f} C")
+
         else:
             labels = []
 
