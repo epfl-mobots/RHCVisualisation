@@ -600,7 +600,7 @@ class Hive():
             labels = [None, None]
             for i, cs in enumerate(_contours):
                 if cs is not None:
-                    labels[i] = ax.clabel(cs, inline=True, fontsize=8, fmt=lambda x: f"{x:.0f} C")
+                    labels[i] = ax.clabel(cs, inline=True, fontsize=8, fmt=lambda x: rf"{x:.0f} $^\circ$C")
         else:
             labels = []
 
@@ -713,20 +713,19 @@ class Hive():
                 pwm = htr_df[htr_df['_field']=='pwm']['_value'].values[0]
                 obj = htr_df[htr_df['_field']=='obj']['_value'].values[0]
 
-                if pwm > 0 or obj > 0:
-                    # Draw a rectangle around the heater
-                    color = (255 * pwm / 950,0,0)
-                    width = int(4 + 7 * pwm / 950)
-                    mrg = 10 # Just a small padding around the text
-                    
-                    cv2.rectangle(rgb_bg[i], self.htr_pos[i][htr][0], self.htr_pos[i][htr][1], color, width)
-                    # Put power bottom left
-                    power = (pwm / 950) * 1.7 # Convert pwm to power in Watts (max 1.7W)
-                    cv2.putText(rgb_bg[i], f"{power:.2f}W", (self.htr_pos[i][htr][0][0]+mrg,self.htr_pos[i][htr][1][1]-mrg), cv2.FONT_HERSHEY_SIMPLEX, 3, (0,0,0), 5, cv2.LINE_AA)
-                    # Put obj bottom right
-                    putTextRightJustify(rgb_bg[i], f"{int(obj)} C", (self.htr_pos[i][htr][1][0]-mrg,self.htr_pos[i][htr][1][1]-mrg), cv2.FONT_HERSHEY_SIMPLEX, 3, (0,0,0), 5, cv2.LINE_AA, vertical_align="center")
-                    # Put the heater number on top left of the rectangle
-                    cv2.putText(rgb_bg[i], htr, (self.htr_pos[i][htr][0][0]+mrg,self.htr_pos[i][htr][0][1]+10*mrg), cv2.FONT_HERSHEY_SIMPLEX, 3, (0,0,0), 5, cv2.LINE_AA)
+                # Draw a rectangle around the heater
+                color = (255 * pwm / 950,0,0)
+                width = int(4 + 7 * pwm / 950)
+                mrg = 10 # Just a small padding around the text
+                
+                cv2.rectangle(rgb_bg[i], self.htr_pos[i][htr][0], self.htr_pos[i][htr][1], color, width)
+                # Put power bottom left
+                power = (pwm / 950) * 1.7 # Convert pwm to power in Watts (max 1.7W)
+                cv2.putText(rgb_bg[i], f"{power:.2f}W", (self.htr_pos[i][htr][0][0]+mrg,self.htr_pos[i][htr][1][1]-mrg), cv2.FONT_HERSHEY_SIMPLEX, 3, (0,0,0), 5, cv2.LINE_AA)
+                # Put obj bottom right
+                putTextRightJustify(rgb_bg[i], f"{int(obj)} C", (self.htr_pos[i][htr][1][0]-mrg,self.htr_pos[i][htr][1][1]-mrg), cv2.FONT_HERSHEY_SIMPLEX, 3, (0,0,0), 5, cv2.LINE_AA, vertical_align="center")
+                # Put the heater number on top left of the rectangle
+                cv2.putText(rgb_bg[i], htr, (self.htr_pos[i][htr][0][0]+mrg,self.htr_pos[i][htr][0][1]+10*mrg), cv2.FONT_HERSHEY_SIMPLEX, 3, (0,0,0), 5, cv2.LINE_AA)
 
     def snapshot(self, thermal_transparency:float=0.25, v_min:float=10, v_max:float=35, contours:list=[], annotate_contours:bool=False, annotate_names:bool=True, show_frame_border:bool=False, show_htr_obj:bool=True, check_validity:bool=True, use_cet_time:bool=False):
         '''
