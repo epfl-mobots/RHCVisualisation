@@ -4,7 +4,7 @@ import cv2, os, h5py, sys
 from io import StringIO
 sys.path.append(os.path.abspath("ABCVisualisation"))
 from ABCImaging.VideoManagment.videolib import imageHiveOverview
-from ABCImaging.Preprocessing.preproc import beautify_frame
+from ABCImaging.Preprocessing.preproc import beautify_frame, beautify_frame_graz
 from ABCImaging.CellContentIdentification.cellcontent import *
 from ABCImaging.HiveOpenings.libOpenings import valid_ts
 from ABCImaging.libimage import RPiCamV3_img_shape_RGB
@@ -217,7 +217,10 @@ thermal_shifts = {
     },
     'aSensing3.5' : {
         1:[(280,520),(420,430),(230,440),(180,440)]
-    } 
+    }, 
+    'phanomena' : {
+        5:[(280,520),(300,480),(230,600),(170,480)]
+    }
 }
 
 class Hive():
@@ -273,7 +276,7 @@ class Hive():
             raise ValueError("metabolic must contain 4 values")
         
         self.ts = ts
-        if hive_nb!=0:
+        if hive_nb == 1 or hive_nb == 2 or hive_nb == 3: # Hive 4 and 5 can only be Graz hives…
             self.valid = valid_ts(ts, hive_nb, recovery_time=180) # We consider 180' for ABCVisu hives
         else:
             self.valid = True # We assume the data is valid if hive number is not known
@@ -287,7 +290,7 @@ class Hive():
         self.hive_nb = hive_nb
         self.name = f"h{self.hive_nb}_{ts.strftime('%y%m%d-%H%M%Z')}"
 
-        if self.hive_nb != 0:
+        if self.hive_nb == 1 or self.hive_nb == 2 or self.hive_nb == 3:
             self.setThermalShifts(Hive.base_thermal_shifts[self.hive_nb-1]) # Set the thermal shifts for the hive number
         else:
             self.setThermalShifts(Hive.base_thermal_shifts[0])
@@ -737,10 +740,12 @@ class Hive():
         if self.pp_imgs is None:
             # Preprocess images with Preprocessing library
             self.pp_imgs = []
-            for img in self.imgs:
+            for i, img in enumerate(self.imgs):
                 if img is None:
                     self.pp_imgs.append(None)
-                else:
+                elif self.hive_nb > 3: # Graz hives
+                    self.pp_imgs.append(beautify_frame_graz(img, i+1))
+                else: # EPFL hives
                     self.pp_imgs.append(beautify_frame(img))
 
         black_image_rgb = np.zeros(RPiCamV3_img_shape_RGB, dtype=np.uint8)
