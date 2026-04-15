@@ -1,9 +1,9 @@
-[submodule "ABCImaging"]
-	path = ABCImaging
-	url = https://github.com/epfl-mobots/ABCImaging.git
-[submodule "ABCThermalPlots"]
-	path = ABCThermalPlots
-	url = https://github.com/epfl-mobots/ABCThermalPlots.git
+[submodule "RHCImaging"]
+	path = RHCImaging
+	url = https://github.com/epfl-mobots/RHCImaging.git
+[submodule "RHCThermalPlots"]
+	path = RHCThermalPlots
+	url = https://github.com/epfl-mobots/RHCThermalPlots.git
 [submodule "InfluxDBInterface"]
 	path = InfluxDBInterface
 	url = https://github.com/epfl-mobots/InfluxDBInterface.git
