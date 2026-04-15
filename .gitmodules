@@ -1,9 +1,9 @@
 [submodule "RHCImaging"]
 	path = RHCImaging
 	url = https://github.com/epfl-mobots/RHCImaging.git
-[submodule "RHCThermalPlots"]
-	path = RHCThermalPlots
-	url = https://github.com/epfl-mobots/RHCThermalPlots.git
 [submodule "InfluxDBInterface"]
 	path = InfluxDBInterface
 	url = https://github.com/epfl-mobots/InfluxDBInterface.git
+[submodule "RHCThermalPlots"]
+	path = RHCThermalPlots
+	url = https://github.com/epfl-mobots/RHCThermalPlots.git
