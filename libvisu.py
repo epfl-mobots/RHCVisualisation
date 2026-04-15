@@ -237,6 +237,7 @@ class Hive():
     htr_size=(800,800) # Size of the heaters in pixels (width, height)
     base_thermal_shifts = [[(260,510),(260,500),(220,520),(220,420)], # Hive 1
                            [(260,510),(260,500),(190,440),(220,490)]] # Hive 2
+    base_co2_pos = {'ul':(300,380),'ur':(4350,380),'ll':(330,380),'lr':(4350,380)}
     
     @staticmethod
     def process_ilastik_mask(honey_mask, hive_num:int, rpi_num:int, min_size:int=3000,threshold:int =128):
@@ -304,7 +305,7 @@ class Hive():
         self.htr_upper = htr_upper # pd.DataFrame that has ['status','pwm','avg_temp','obj','actuator_instance'] as columns
         self.htr_lower = htr_lower # pd.DataFrame that has ['status','pwm','avg_temp','obj','actuator_instance'] as columns
         # To store the pixel shifts between the thermal and imaging data. A list of 4 tuples, each tuple containing the x,y shifts for the corresponding RPi image.
-        self.co2_pos = {'ul':(300,380),'ur':(4350,380),'ll':(330,380),'lr':(4350,380)}
+        self.co2_pos = Hive.base_co2_pos
 
     def computeHtrPos(self):
         '''
