@@ -1,14 +1,13 @@
 # This script generates a video from a sequence of pictures. Use the Imaging conda env to run.
 import pandas as pd
 import cv2, os, h5py, sys
-from io import StringIO
-sys.path.append(os.path.abspath("ABCVisualisation"))
-from ABCImaging.VideoManagment.videolib import imageHiveOverview
-from ABCImaging.Preprocessing.preproc import beautify_frame
-from ABCImaging.CellContentIdentification.cellcontent import *
-from ABCImaging.HiveOpenings.libOpenings import valid_ts
-from ABCImaging.libimage import RPiCamV3_img_shape_RGB
-from ABCThermalPlots.thermalutil import *
+sys.path.append(os.path.abspath("RHCVisualisation"))
+from RHCImaging.VideoManagment.videolib import imageHiveOverview
+from RHCImaging.Preprocessing.preproc import beautify_frame
+from RHCImaging.CellContentIdentification.cellcontent import *
+from RHCImaging.HiveOpenings.libOpenings import valid_ts
+from RHCImaging.libimage import RPiCamV3_img_shape_RGB
+from RHCThermalPlots.thermalutil import *
 from InfluxDBInterface.libdb import readInfluxCSV
 from PIL import Image  # Or OpenCV if preferred
 from matplotlib.path import Path
@@ -275,7 +274,7 @@ class Hive():
         
         self.ts = ts
         if hive_nb == 1 or hive_nb == 2 or hive_nb == 3: # Hive 4 and 5 can only be Graz hives…
-            self.valid = valid_ts(ts, hive_nb, recovery_time=180) # We consider 180' for ABCVisu hives
+            self.valid = valid_ts(ts, hive_nb, recovery_time=180) # We consider 180' for RHCVisu hives
         else:
             self.valid = True # We assume the data is valid if hive number is not known
 
