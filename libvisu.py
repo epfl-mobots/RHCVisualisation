@@ -234,6 +234,7 @@ class Hive():
     htr_size=(800,800) # Size of the heaters in pixels (width, height)
     base_thermal_shifts = [[(260,510),(260,500),(220,520),(220,420)], # Hive 1
                            [(260,510),(260,500),(190,440),(220,490)]] # Hive 2
+    base_co2_pos = {'ul':(300,380),'ur':(4350,380),'ll':(330,380),'lr':(4350,380)}
     
     @staticmethod
     def process_ilastik_mask(honey_mask, hive_num:int, rpi_num:int, min_size:int=3000,threshold:int =128):
@@ -273,7 +274,7 @@ class Hive():
             raise ValueError("metabolic must contain 4 values")
         
         self.ts = ts
-        if hive_nb!=0:
+        if hive_nb == 1 or hive_nb == 2 or hive_nb == 3: # Hive 4 and 5 can only be Graz hives…
             self.valid = valid_ts(ts, hive_nb, recovery_time=180) # We consider 180' for ABCVisu hives
         else:
             self.valid = True # We assume the data is valid if hive number is not known
@@ -287,7 +288,7 @@ class Hive():
         self.hive_nb = hive_nb
         self.name = f"h{self.hive_nb}_{ts.strftime('%y%m%d-%H%M%Z')}"
 
-        if self.hive_nb != 0:
+        if self.hive_nb == 1 or self.hive_nb == 2 or self.hive_nb == 3:
             self.setThermalShifts(Hive.base_thermal_shifts[self.hive_nb-1]) # Set the thermal shifts for the hive number
         else:
             self.setThermalShifts(Hive.base_thermal_shifts[0])
@@ -301,7 +302,7 @@ class Hive():
         self.htr_upper = htr_upper # pd.DataFrame that has ['status','pwm','avg_temp','obj','actuator_instance'] as columns
         self.htr_lower = htr_lower # pd.DataFrame that has ['status','pwm','avg_temp','obj','actuator_instance'] as columns
         # To store the pixel shifts between the thermal and imaging data. A list of 4 tuples, each tuple containing the x,y shifts for the corresponding RPi image.
-        self.co2_pos = {'ul':(300,380),'ur':(4350,380),'ll':(330,380),'lr':(4350,380)}
+        self.co2_pos = Hive.base_co2_pos
 
     def computeHtrPos(self):
         '''
