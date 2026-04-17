@@ -553,7 +553,7 @@ class Hive():
             co2_pos = self.co2_pos
             if i >= 2:
                 # Flip the co2_pos horizontally
-                co2_pos = {k:(img.shape[1]-v[0]-220,v[1]) for k,v in co2_pos.items()}
+                co2_pos = {k:(img.shape[1]-v[0]-220, v[1]) for k,v in co2_pos.items()}
 
             for co2 in co2_showed:
                 # Compute the size of the text based on the metabolic measure. Put max_size at 30000 and min_size at 300, linearly.
