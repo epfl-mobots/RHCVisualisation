@@ -1,5 +1,6 @@
 # This script generates a video from a sequence of pictures. Use the Imaging conda env to run.
 import pandas as pd
+import matplotlib.pyplot as plt
 import cv2, os, h5py, sys
 sys.path.append(os.path.abspath("RHCVisualisation"))
 from RHCImaging.VideoManagment.videolib import imageHiveOverview
@@ -7,7 +8,7 @@ from RHCImaging.Preprocessing.preproc import beautify_frame
 from RHCImaging.CellContentIdentification.cellcontent import *
 from RHCImaging.HiveOpenings.libOpenings import valid_ts
 from RHCImaging.libimage import RPiCamV3_img_shape_RGB
-from RHCThermalPlots.thermalutil import *
+from RHCThermalPlots.thermalframe import ThermalFrame
 from InfluxDBInterface.libdb import readInfluxCSV
 from PIL import Image  # Or OpenCV if preferred
 from matplotlib.path import Path
