@@ -304,6 +304,25 @@ class Hive():
         # To store the pixel shifts between the thermal and imaging data. A list of 4 tuples, each tuple containing the x,y shifts for the corresponding RPi image.
         self.co2_pos = Hive.base_co2_pos
 
+    def computePPImgs(self):
+        '''
+        Computes the preprocessed images (self.pp_imgs) from the raw images (self.imgs) if they have not been computed yet. Uses the beautify_frame function.
+        '''
+        if self.pp_imgs is not None:
+            return self.pp_imgs
+        
+        pp_imgs = []
+        for img in self.imgs:
+            if img is None:
+                pp_imgs.append(None)
+            else:
+                # Convert to grayscale if not already done
+                if len(img.shape) == 3 and img.shape[2] == 3:
+                    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                pp_imgs.append(beautify_frame(img))
+        self.pp_imgs = pp_imgs
+        return self.pp_imgs
+
     def computeHtrPos(self):
         '''
         Computes the positions of the heaters in pp_imgs based on self.thermal_shifts.
@@ -414,14 +433,8 @@ class Hive():
         '''
         Returns the images of the heaters for each RPi. The images are cropped to the size of the heaters.
         '''
-        # Check if self.pp_imgs is None are computed or not. Compute if not
-        if self.pp_imgs is None:
-            self.pp_imgs = []
-            for rpi in range(4):
-                if self.imgs[rpi] is None:
-                    self.pp_imgs.append(None)
-                else:
-                    self.pp_imgs.append(beautify_frame(self.imgs[rpi]))
+        # Check if self.pp_imgs is None are computed or not; compute if not
+        self.computePPImgs()
 
         bee_arena_px = self.getBeeArena()
         bee_arenas_imgs = []
@@ -734,14 +747,7 @@ class Hive():
         Generates a global image with the 4 images of the hives with the timestamp on the pictures. It then adds the ThermalFrames ontop of the images.
         '''
         # Preprocess images if not already done
-        if self.pp_imgs is None:
-            # Preprocess images with Preprocessing library
-            self.pp_imgs = []
-            for img in self.imgs:
-                if img is None:
-                    self.pp_imgs.append(None)
-                else:
-                    self.pp_imgs.append(beautify_frame(img))
+        self.computePPImgs()
 
         black_image_rgb = np.zeros(RPiCamV3_img_shape_RGB, dtype=np.uint8)
         rgb_bg = [cv2.cvtColor(img, cv2.COLOR_GRAY2RGB) if img is not None else black_image_rgb.copy() for img in self.pp_imgs]
@@ -877,12 +883,7 @@ class Hive():
         NOTE: This function is currently not used as the line detection method is not reliable.
         '''
         shifts = []
-        if self.pp_imgs is None:
-            # Preprocess images with Preprocessing library
-            self.pp_imgs = []
-            for img in self.imgs:
-                gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-                self.pp_imgs.append(beautify_frame(gray_img))
+        self.computePPImgs() # Ensure the preprocessed images are computed
 
         for pp_img in self.pp_imgs:
             # Perform edge detection
