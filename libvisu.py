@@ -200,7 +200,7 @@ def putTextRightJustify(
     # Draw the text
     cv2.putText(img, text, (x, y), font, font_scale, color, thickness, line_type)
 
-thermal_shifts = {
+exp_thermal_shifts = {
     'aSensing1' : {
         1:[(260,510),(260,500),(220,520),(220,420)],
         2:[(260,510),(260,500),(190,440),(210,490)]
@@ -264,7 +264,7 @@ class Hive():
         - metabolic: pd.DataFrame that has ['ul','ur','ll','lr'] as columns and the metabolic measures as values
         - htr_upper: pd.DataFrame that has ['status','pwm','avg_temp','obj','actuator_instance'] as columns
         - htr_lower: pd.DataFrame that has ['status','pwm','avg_temp','obj','actuator_instance'] as columns
-        - hive_nb: int, hive number (1 or 2). 0 if unknown. Used to verify data validity.
+        - hive_nb: int, hive number (1 or 2). 0 if unknown. Used to verify data validity, set the name of the hive and set the thermal shifts.
         '''
 
         if len(imgs) != 4 or len(imgs_names) != 4:
@@ -273,8 +273,9 @@ class Hive():
             raise ValueError("metabolic must contain 4 values")
         
         self.ts = ts
-        if hive_nb == 1 or hive_nb == 2 or hive_nb == 3: # Hive 4 and 5 can only be Graz hives…
-            self.valid = valid_ts(ts, hive_nb, recovery_time=180) # We consider 180' for RHCVisu hives
+        self.hive_nb = hive_nb
+        if self.hive_nb == 1 or self.hive_nb == 2 or self.hive_nb == 3: # Hive 4 and 5 can only be Graz hives…
+            self.valid = valid_ts(ts, self.hive_nb, recovery_time=180) # We consider 180' for RHCVisu hives
         else:
             self.valid = True # We assume the data is valid if hive number is not known
 
@@ -284,10 +285,9 @@ class Hive():
         else:
             self.pp_imgs = None
         self.imgs_names = imgs_names
-        self.hive_nb = hive_nb
         self.name = f"h{self.hive_nb}_{ts.strftime('%y%m%d-%H%M%Z')}"
 
-        if self.hive_nb == 1 or self.hive_nb == 2 or self.hive_nb == 3:
+        if self.hive_nb == 1 or self.hive_nb == 2: # No thermal shifts for h3 as box hive
             self.setThermalShifts(Hive.base_thermal_shifts[self.hive_nb-1]) # Set the thermal shifts for the hive number
         else:
             self.setThermalShifts(Hive.base_thermal_shifts[0])
@@ -409,9 +409,9 @@ class Hive():
 
         return bee_arenas
     
-    def getHeaterImages(self):
+    def getBeeArenaImages(self):
         '''
-        Returns the images of the heaters for each RPi. The images are cropped to the size of the heaters.
+        Returns the images of the bee arenas for each RPi. The images are cropped to the size of the bee arenas.
         '''
         # Check if self.pp_imgs is None are computed or not. Compute if not
         if self.pp_imgs is None:
@@ -439,7 +439,7 @@ class Hive():
         - model_path: str, path to the ilastik model
         - rpis: list of int, rpi cameras to process. Default is all ([1,2,3,4])
         '''
-        cropped_images = self.getHeaterImages()
+        cropped_images = self.getBeeArenaImages()
         # Create a temporary directory to store the cropped images
         dir_name = f"tmp_{self.name}"
         tmp_dir = os.path.join(os.getcwd(), dir_name)
@@ -521,7 +521,7 @@ class Hive():
         
         Sets (and overwrites) self.honey_masks.
         '''
-        cropped_images = self.getHeaterImages()
+        cropped_images = self.getBeeArenaImages()
         masks = []
         for i, img in enumerate(cropped_images):
             if i+1 not in rpis:
