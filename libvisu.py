@@ -455,8 +455,18 @@ class Hive():
         self.computePPImgs()
         
         # TODO: change these numbers after testing
-        top_pxs = 200 # The number of pixels that we include above the bee arena for the lower RPis
-        bot_pxs = 200 # The number of pixels that we include below the bee arena for the upper RPis
+        top_pxs = None # The number of pixels that we include above the bee arena for the lower RPis
+        bot_pxs = None # The number of pixels that we include below the bee arena for the upper RPis
+        if self.hive_nb == 1:
+            # Images do not overlap
+            top_pxs = 9999
+            bot_pxs = 9999
+        elif self.hive_nb == 2:
+            top_pxs = 200
+            bot_pxs = 200
+        else: # Default values
+            top_pxs = 200
+            bot_pxs = 200
 
         bee_arena_px = self.getBeeArena()
         unique_imgs = []
