@@ -446,6 +446,31 @@ class Hive():
         
         return bee_arenas_imgs
     
+    def getUniqueRPiImages(self):
+        '''
+        Returns the images of the four RPis in a way that there is no overlap between them.
+        The cropped images are thus larger than the bee arenas, but smaller than the original images.
+        '''
+        # Check if self.pp_imgs is None are computed or not; compute if not
+        self.computePPImgs()
+        
+        # TODO: change these numbers after testing
+        top_pxs = 200 # The number of pixels that we include above the bee arena for the lower RPis
+        bot_pxs = 200 # The number of pixels that we include below the bee arena for the upper RPis
+
+        bee_arena_px = self.getBeeArena()
+        unique_imgs = []
+        for rpi in range(4):
+            if self.pp_imgs[rpi] is None:
+                unique_imgs.append(None)
+            elif rpi == 0 or rpi == 2: # Upper RPis
+                unique_imgs.append(self.pp_imgs[rpi][:bee_arena_px[rpi][1][1]+bot_pxs, :])
+            else: # Lower RPis
+                start_y = max(0, bee_arena_px[rpi][0][1]-top_pxs)
+                unique_imgs.append(self.pp_imgs[rpi][start_y:, :])
+        
+        return unique_imgs
+    
     def ilastikSegmentHoney(self, model_path:str, rpis:list[int]=[1,2,3,4], verbose:bool=False):
         '''
         Uses the provided ilastik model to segment the honey in the images. Uses a tmp folder to store the cropped images but deletes them after processing.
