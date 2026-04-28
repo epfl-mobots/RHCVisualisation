@@ -458,25 +458,22 @@ class Hive():
         top_pxs = None # The number of pixels that we include above the bee arena for the lower RPis
         bot_pxs = None # The number of pixels that we include below the bee arena for the upper RPis
         if self.hive_nb == 1:
-            # Images do not overlap
-            top_pxs = 9999
-            bot_pxs = 9999
+            margins = [250, 420, 230, 9999]
         elif self.hive_nb == 2:
-            top_pxs = 200
-            bot_pxs = 200
+            margins = [140, 440, 140, 430]
         else: # Default values
-            top_pxs = 200
-            bot_pxs = 200
+            margins = [9999, 9999, 9999, 9999]
 
         bee_arena_px = self.getBeeArena()
         unique_imgs = []
         for rpi in range(4):
+            margin = margins[rpi]
             if self.pp_imgs[rpi] is None:
                 unique_imgs.append(None)
             elif rpi == 0 or rpi == 2: # Upper RPis
-                unique_imgs.append(self.pp_imgs[rpi][:bee_arena_px[rpi][1][1]+bot_pxs, :])
+                unique_imgs.append(self.pp_imgs[rpi][:bee_arena_px[rpi][1][1]+margin, :])
             else: # Lower RPis
-                start_y = max(0, bee_arena_px[rpi][0][1]-top_pxs)
+                start_y = max(0, bee_arena_px[rpi][0][1]-margin)
                 unique_imgs.append(self.pp_imgs[rpi][start_y:, :])
         
         return unique_imgs
