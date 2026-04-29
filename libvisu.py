@@ -448,11 +448,9 @@ class Hive():
     
     def getUniqueRPiImages(self):
         '''
-        Returns the images of the four RPis in a way that there is no overlap between them.
+        Returns the raw images of the four RPis in a way that there is no overlap between them.
         The cropped images are thus larger than the bee arenas, but smaller than the original images.
         '''
-        # Check if self.pp_imgs is None are computed or not; compute if not
-        self.computePPImgs()
         
         if self.hive_nb == 1:
             margins = [250, 420, 230, 9999]
@@ -465,13 +463,13 @@ class Hive():
         unique_imgs = []
         for rpi in range(4):
             margin = margins[rpi]
-            if self.pp_imgs[rpi] is None:
+            if self.imgs[rpi] is None:
                 unique_imgs.append(None)
             elif rpi == 0 or rpi == 2: # Upper RPis
-                unique_imgs.append(self.pp_imgs[rpi][:bee_arena_px[rpi][1][1]+margin, :])
+                unique_imgs.append(self.imgs[rpi][:bee_arena_px[rpi][1][1]+margin, :])
             else: # Lower RPis
                 start_y = max(0, bee_arena_px[rpi][0][1]-margin)
-                unique_imgs.append(self.pp_imgs[rpi][start_y:, :])
+                unique_imgs.append(self.imgs[rpi][start_y:, :])
         
         return unique_imgs
     
