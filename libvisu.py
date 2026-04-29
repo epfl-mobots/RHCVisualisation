@@ -454,9 +454,6 @@ class Hive():
         # Check if self.pp_imgs is None are computed or not; compute if not
         self.computePPImgs()
         
-        # TODO: change these numbers after testing
-        top_pxs = None # The number of pixels that we include above the bee arena for the lower RPis
-        bot_pxs = None # The number of pixels that we include below the bee arena for the upper RPis
         if self.hive_nb == 1:
             margins = [250, 420, 230, 9999]
         elif self.hive_nb == 2:
