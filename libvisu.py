@@ -268,8 +268,10 @@ class Hive():
         - hive_nb: int, hive number (1 or 2). 0 if unknown. Used to verify data validity, set the name of the hive and set the thermal shifts.
         '''
 
-        if len(imgs) != 4 or len(imgs_names) != 4:
-            raise ValueError("imgs must contain 4 images")
+        if len(imgs) != 4:
+            raise ValueError(f"imgs must contain 4 images, got {len(imgs)}")
+        if len(imgs_names) != 4:
+            raise ValueError(f"imgs_names must contain 4 names, got {len(imgs_names)}")
         if metabolic is not None and len(metabolic) != 4:
             raise ValueError("metabolic must contain 4 values")
         
