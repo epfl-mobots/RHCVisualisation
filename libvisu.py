@@ -234,7 +234,7 @@ class Hive():
     htr_size=(800,800) # Size of the heaters in pixels (width, height)
     base_thermal_shifts = [[(260,510),(260,500),(220,520),(220,420)], # Hive 1
                            [(260,510),(260,500),(190,440),(220,490)]] # Hive 2
-    base_co2_pos = {'ul':(300,380),'ur':(4350,380),'ll':(330,380),'lr':(4350,380)}
+    base_co2_pos = {'ul':(300,380),'ur':(4500,380),'ll':(330,380),'lr':(4500,380)}
     
     @staticmethod
     def process_ilastik_mask(honey_mask, hive_num:int, rpi_num:int, min_size:int=3000,threshold:int =128):
@@ -607,9 +607,10 @@ class Hive():
                 color = (255 * (co2_value - 360) / (30000 - 360),0,0)
                 size = min_size + (max_size - min_size) * (co2_value - 360) / (30000 - 360)
                 if (co2[1] == 'r' and i<2) or (co2[1] == 'l' and i>=2):
-                    # Change the x value of co2_pos to decrease with the size
-                    co2_pos[co2] = (co2_pos[co2][0] - int(800*(size-min_size)/(max_size-min_size)), co2_pos[co2][1])
-                cv2.putText(rgb_imgs[i], f"{co2_value}", co2_pos[co2], cv2.FONT_HERSHEY_SIMPLEX, size, color, 20, cv2.LINE_AA)
+                    # Right justify the text
+                    putTextRightJustify(rgb_imgs[i], f"{co2_value}", co2_pos[co2], font_scale=size, color=color, thickness=20)
+                else:
+                    cv2.putText(rgb_imgs[i], f"{co2_value}", co2_pos[co2], cv2.FONT_HERSHEY_SIMPLEX, size, color, 20, cv2.LINE_AA)
 
     def _tmp_snapshot(self, rgb_imgs:list, v_min, v_max, thermal_transparency, contours:list, annotate_contours:bool):
         overlays = [None, None]
