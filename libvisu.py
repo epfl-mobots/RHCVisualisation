@@ -12,7 +12,11 @@ from RHCThermalPlots.thermalframe import ThermalFrame
 from InfluxDBInterface.libdb import readInfluxCSV
 from PIL import Image  # Or OpenCV if preferred
 from matplotlib.path import Path
-from EasIlastik import * # Just a simple package that runs iLastik in headless mode
+from typing import List
+try:
+    from EasIlastik import * # Just a simple package that runs iLastik in headless mode
+except ImportError:
+    pass
 
 # Function to access files and force download
 def preload_images(src_path:str):
@@ -252,7 +256,7 @@ class Hive():
         mask=remove_small_patches(mask, min_size)
         return mask
 
-    def __init__(self, ts:pd.Timestamp, imgs:list, imgs_preprocessed:bool, imgs_names:list[str], upper:ThermalFrame = None, lower:ThermalFrame = None, metabolic:pd.DataFrame = None, htr_upper:pd.DataFrame = None, htr_lower:pd.DataFrame = None, hive_nb:int = 0):
+    def __init__(self, ts:pd.Timestamp, imgs:List, imgs_preprocessed:bool, imgs_names:List[str], upper:ThermalFrame = None, lower:ThermalFrame = None, metabolic:pd.DataFrame = None, htr_upper:pd.DataFrame = None, htr_lower:pd.DataFrame = None, hive_nb:int = 0):
         '''
         Constructor for the Hive class.
         Parameters:
@@ -475,7 +479,7 @@ class Hive():
         
         return unique_imgs
     
-    def ilastikSegmentHoney(self, model_path:str, rpis:list[int]=[1,2,3,4], verbose:bool=False):
+    def ilastikSegmentHoney(self, model_path:str, rpis:List[int]=[1,2,3,4], verbose:bool=False):
         '''
         Uses the provided ilastik model to segment the honey in the images. Uses a tmp folder to store the cropped images but deletes them after processing.
         args:
@@ -553,7 +557,7 @@ class Hive():
         mask = remove_small_patches(mask, min_size=10000) # Remove small patches that are not honey
         return mask
 
-    def regionGrowSegmentHoney(self, rpis:list[int]=[1,2,3,4], gradient_threshold:int=4, value_threshold:int=160, min_size:int=700, verbose:bool=False):
+    def regionGrowSegmentHoney(self, rpis:List[int]=[1,2,3,4], gradient_threshold:int=4, value_threshold:int=160, min_size:int=700, verbose:bool=False):
         '''
         Uses the region growing algorithm to segment the honey in the images. Uses a tmp folder to store the cropped images but deletes them after processing.
         args:
