@@ -205,6 +205,33 @@ def putTextRightJustify(
     # Draw the text
     cv2.putText(img, text, (x, y), font, font_scale, color, thickness, line_type)
 
+def getDegreeCTextSize(text_prefix:str, font=cv2.FONT_HERSHEY_SIMPLEX, font_scale=1, thickness=2):
+    '''
+    Computes the total (width, height) taken by `text_prefix` + the degree symbol + "C", as drawn by putDegreeCText.
+    '''
+    (prefix_width, prefix_height), _ = cv2.getTextSize(text_prefix, font, font_scale, thickness)
+    (suffix_width, _), _ = cv2.getTextSize("C", font, font_scale, thickness)
+    gap = max(4, int(prefix_height * 0.15))
+    radius = max(2, int(prefix_height * 0.12))
+    total_width = prefix_width + gap + 2 * radius + gap + suffix_width
+    return total_width, prefix_height
+
+def putDegreeCText(img, text_prefix:str, origin:tuple, font=cv2.FONT_HERSHEY_SIMPLEX, font_scale=1, color=(0, 0, 0), thickness=2, line_type=cv2.LINE_AA):
+    '''
+    Draws "{text_prefix}°C" on an OpenCV image. OpenCV's Hershey fonts do not support the ° character,
+    so it is drawn as a small circle between `text_prefix` and "C".
+    '''
+    (prefix_width, prefix_height), _ = cv2.getTextSize(text_prefix, font, font_scale, thickness)
+    gap = max(4, int(prefix_height * 0.15))
+    radius = max(2, int(prefix_height * 0.12))
+
+    cv2.putText(img, text_prefix, origin, font, font_scale, color, thickness, line_type)
+
+    degree_center = (origin[0] + prefix_width + gap + radius, origin[1] - prefix_height + radius)
+    cv2.circle(img, degree_center, radius, color, max(1, thickness - 1), line_type)
+
+    cv2.putText(img, "C", (degree_center[0] + radius + gap, origin[1]), font, font_scale, color, thickness, line_type)
+
 exp_thermal_shifts = {
     'aSensing1' : {
         1:[(260,510),(260,500),(220,520),(220,420)],
@@ -809,13 +836,13 @@ class Hive():
             assembled_img = imageHiveOverview(rgb_bg, rgb=True, dt=self.ts, use_cet_time=use_cet_time, valid=(self.valid or not check_validity))
 
         # add ambient temperature on the image (min temp)
-        ambient_t_text = f"Ambient: {min_temp:.1f} C"
-        (text_width, text_height), _ = cv2.getTextSize(ambient_t_text, cv2.FONT_HERSHEY_SIMPLEX, 2, 3)
+        ambient_t_prefix = f"Ambient: {min_temp:.1f} "
+        text_width, text_height = getDegreeCTextSize(ambient_t_prefix, cv2.FONT_HERSHEY_SIMPLEX, 2, 3)
         rectangle_bgr = (255, 255, 255)
         box_coords = ((2700, 2130 + 15), (2700 + text_width, 2130 - text_height - 15))
         # Add ambient temperature to the image
         cv2.rectangle(assembled_img, box_coords[0], box_coords[1], rectangle_bgr, cv2.FILLED)
-        cv2.putText(assembled_img, ambient_t_text, (2700, 2130), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 3, cv2.LINE_AA)
+        putDegreeCText(assembled_img, ambient_t_prefix, (2700, 2130), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 3, cv2.LINE_AA)
 
         return assembled_img
     

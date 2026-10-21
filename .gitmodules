@@ -7,3 +7,6 @@
 [submodule "RHCThermalPlots"]
 	path = RHCThermalPlots
 	url = https://github.com/epfl-mobots/RHCThermalPlots.git
+[submodule "RHCCalibration"]
+	path = RHCCalibration
+	url = https://github.com/epfl-mobots/RHCCalibration.git
